@@ -73,7 +73,7 @@ export default {
     }
   }),
   locales: {
-    pt_br: {
+    vn: {
       "Select your means of murder:": "Selecione a causa da morte:",
       "Select your key evidence:": "Selecione a evidência principal:",
       "Send choice": "Enviar escolha"

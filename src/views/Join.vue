@@ -55,7 +55,7 @@
 export default {
   name: "Home",
   locales: {
-    pt_br: {
+    vn: {
       "Enter a game code and a nickname to join a game:":
         "Digite o código do jogo e um apelido para entrar:",
       "Your nickname": "Seu apelido",

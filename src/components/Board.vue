@@ -28,7 +28,7 @@
               :style="{
                 transform: `translate(-50%, -50%) rotate(${parseInt(
                   3 - Math.random() * 6
-                )}deg)`,
+                )}deg)`
               }"
             >
               <span class="red--text" v-if="game.murderer === player.index"
@@ -38,7 +38,7 @@
             </div>
             <v-card
               :style="{
-                transform: `rotate(${parseInt(3 - Math.random() * 6)}deg)`,
+                transform: `rotate(${parseInt(3 - Math.random() * 6)}deg)`
               }"
             >
               <v-card-text>
@@ -109,7 +109,7 @@
           :key="'fa' + index"
           class="mb-4"
           :style="{
-            transform: `rotate(${parseInt(3 - Math.random() * 6)}deg)`,
+            transform: `rotate(${parseInt(3 - Math.random() * 6)}deg)`
           }"
         >
           <v-card-text class="analysis">
@@ -129,7 +129,7 @@ export default {
   name: "Board",
 
   locales: {
-    pt_br: {
+    vn: {
       Game: "Jogo",
       "Suspects of the crime:": "Suspeitos do crime:",
       "Passed this turn": "Passou o turno",
@@ -139,8 +139,8 @@ export default {
       Round: "Turno",
       of: "de",
       Analysis: "Análise",
-      "Forensic Scientist": "Cientista Forense",
-    },
+      "Forensic Scientist": "Cientista Forense"
+    }
   },
   computed: {
     game() {
@@ -149,16 +149,16 @@ export default {
     players() {
       if (!this.game || !this.game.players) return false;
       return Object.keys(this.game.players).map(
-        (item) => this.game.players[item]
+        item => this.game.players[item]
       );
     },
     suspects() {
-      return this.players.filter((item) => item.index !== this.game.detective);
-    },
+      return this.players.filter(item => item.index !== this.game.detective);
+    }
   },
   mounted() {
     this.$translate.setLang(this.game.lang);
-  },
+  }
 };
 </script>
 

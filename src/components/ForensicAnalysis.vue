@@ -88,7 +88,7 @@ export default {
     analysis: []
   }),
   locales: {
-    pt_br: {
+    vn: {
       "is the murderer. Wait for means of murder and key evidence.":
         "cometeu o crime. Aguarde a causa e evidência principal.",
       used: "usou",

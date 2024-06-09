@@ -94,7 +94,7 @@ import LobbyPlayers from "./LobbyPlayers";
 export default {
   name: "Home",
   locales: {
-    pt_br: {
+    vn: {
       "Lobby for room": "Lobby para a sala",
       "Waiting for players": "Esperando pelos jogadores",
       "No players joined yet.": "Nenhum jogador entrou ainda.",

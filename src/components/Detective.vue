@@ -171,7 +171,7 @@ export default {
     }
   },
   locales: {
-    pt_br: {
+    vn: {
       "the murderer": "o assassino",
       "a detective": "um detetive",
       "You are": "Você é",

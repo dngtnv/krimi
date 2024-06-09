@@ -40,7 +40,7 @@ import Detective from "@/components/Detective";
 export default {
   name: "Player",
   locales: {
-    pt_br: {
+    vn: {
       "You are in room": "Você está na sala",
       "Waiting for the game start.": "Esperando o jogo começar."
     }
