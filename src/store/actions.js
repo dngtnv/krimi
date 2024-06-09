@@ -1,19 +1,31 @@
-import database from "@/database";
 import rules from "@/api/rules";
-import means from "@/data/means";
-import clues from "@/data/clues";
 import analysis from "@/data/analysis";
-import meanspt_br from "@/data/means-ptbr";
-import cluespt_br from "@/data/clues-ptbr";
-import analysispt_br from "@/data/analysis-ptbr";
+import analysisvn from "@/data/analysis-ptbr";
+import clues from "@/data/clues";
+import cluesvn from "@/data/clues-ptbr";
+import means from "@/data/means";
+import meansvn from "@/data/means-ptbr";
+import database from "@/database";
+import {
+  equalTo,
+  get,
+  onChildAdded,
+  onChildChanged,
+  orderByChild,
+  push,
+  query,
+  ref,
+  set,
+  update
+} from "firebase/database";
 
 import router from "@/router";
 
 export default {
   createGame: async (context, payload) => {
-    const gameList = database.ref("/");
-    const game = await gameList.push();
-    const gamekey = game.getKey();
+    const gameList = ref(database, "/");
+    const game = await push(gameList);
+    const gamekey = game.key;
     const gameData = {
       gameId: rules.createRandomId(),
       players: {},
@@ -24,7 +36,7 @@ export default {
       round: 1,
       lang: payload
     };
-    await game.set(gameData);
+    await set(game, gameData);
     context.commit("setGame", gameData);
     return {
       gameId: gameData.gameId,
@@ -33,14 +45,14 @@ export default {
   },
 
   loadGame: async (context, payload) => {
-    const loadedGame = database
-      .ref("/")
-      .orderByChild("gameId")
-      .equalTo(payload);
-    await loadedGame.on("child_added", snapshot => {
+    const gameRef = ref(database, "/");
+    const gameQuery = query(gameRef, orderByChild("gameId"), equalTo(payload));
+
+    onChildAdded(gameQuery, snapshot => {
       context.commit("setGame", snapshot.val());
     });
-    loadedGame.on("child_changed", snapshot => {
+
+    onChildChanged(gameQuery, snapshot => {
       context.commit("setGame", snapshot.val());
     });
   },
@@ -52,10 +64,10 @@ export default {
         means,
         analysis
       },
-      pt_br: {
-        clues: cluespt_br,
-        means: meanspt_br,
-        analysis: analysispt_br
+      vn: {
+        clues: cluesvn,
+        means: meansvn,
+        analysis: analysisvn
       }
     };
     const lang = payload.lang || "en";
@@ -96,23 +108,27 @@ export default {
       analysis: [...analysisCause, ...analysisLocation, ...analysisOther],
       murderer: rules.chooseRandomMurderer(payload.players, payload.detective)
     };
-    await database.ref("/" + payload.game).update(startedGame);
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, startedGame);
   },
 
   async setDetective(context, payload) {
-    await database.ref("/" + payload.game).update({
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, {
       detective: payload.player
     });
   },
 
   async setAnalysis(context, payload) {
-    await database.ref("/" + payload.game).update({
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, {
       forensicAnalysis: payload.analysis
     });
   },
 
   async setMurdererChoice(context, payload) {
-    await database.ref("/" + payload.game).update({
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, {
       murdererChoice: payload.choice
     });
   },
@@ -122,7 +138,8 @@ export default {
     const players = Object.keys(game.players).length;
     const turnsArray = game.passedTurns || new Array(players).fill(false);
     turnsArray[payload.player.index] = true;
-    await database.ref(`/${payload.game}`).update({
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, {
       passedTurns: turnsArray
     });
     context.dispatch("checkEndGame", payload);
@@ -133,7 +150,8 @@ export default {
     const players = Object.keys(game.players).length;
     const guessesArray = game.guesses || new Array(players).fill(false);
     guessesArray[payload.player.index] = payload.guess;
-    await database.ref(`/${payload.game}`).update({
+    const gameRef = ref(database, "/" + payload.game);
+    await update(gameRef, {
       guesses: guessesArray
     });
     context.dispatch("checkEndGame", payload);
@@ -155,12 +173,14 @@ export default {
           item.key === game.murdererChoice.key
       ).length > 0
     ) {
-      await database.ref(`/${payload.game}`).update({
+      const gameRef = ref(database, "/" + payload.game);
+      await update(gameRef, {
         finished: true,
         winner: "detectives"
       });
     } else if (validGuesses.length === players - 1) {
-      await database.ref(`/${payload.game}`).update({
+      const gameRef = ref(database, "/" + payload.game);
+      await update(gameRef, {
         finished: true,
         winner: "murderer"
       });
@@ -168,7 +188,8 @@ export default {
       game.round === 3 &&
       validGuesses.length + playersPassed.length === players.length - 1
     ) {
-      await database.ref(`/${payload.game}`).update({
+      const gameRef = ref(database, "/" + payload.game);
+      await update(gameRef, {
         finished: true,
         winner: "murderer"
       });
@@ -186,68 +207,126 @@ export default {
           ? new Array(players).fill(false)
           : game.passedTurns;
       console.log(validGuesses, playersPassed, players);
-      await database.ref(`/${payload.game}`).update({
-        passedTurns: clearPass,
-        availableClues: newClues,
-        round: newRound
-      });
+      try {
+        const gameRef = ref(database, "/" + payload.game);
+        await update(gameRef, {
+          passedTurns: clearPass,
+          availableClues: newClues,
+          round: newRound
+        });
+        console.log("Game updated successfully");
+      } catch (error) {
+        console.error("Failed to update game:", error);
+      }
     }
   },
 
   async addPlayer(context, payload) {
-    const loadedGame = await database
-      .ref("/")
-      .orderByChild("gameId")
-      .equalTo(payload.gameId)
-      .once("child_added")
-      .then(snaphot => snaphot.val());
-
-    const gamePlayers = await database.ref(`/${loadedGame.gamekey}/players`);
-
-    const oldPlayer = await gamePlayers
-      .orderByChild("slug")
-      .equalTo(payload.slug)
-      .once("value")
-      .then(snapshot => {
-        return snapshot.val();
+    try {
+      const gameQuery = query(
+        ref(database, "/"),
+        orderByChild("gameId"),
+        equalTo(payload.gameId)
+      );
+      const gameSnapshot = await get(gameQuery);
+      let loadedGame;
+      gameSnapshot.forEach(child => {
+        loadedGame = child.val();
+        return true; // Stop iterating after the first match
       });
 
-    if (oldPlayer && loadedGame.started) {
+      if (!loadedGame) {
+        console.error("Game not found");
+        return "Game not found";
+      }
+
+      const gamePlayersRef = ref(database, `/${loadedGame.gamekey}/players`);
+      const playerQuery = query(
+        gamePlayersRef,
+        orderByChild("slug"),
+        equalTo(payload.slug)
+      );
+      const playerSnapshot = await get(playerQuery);
+      const oldPlayer = playerSnapshot.exists() ? playerSnapshot.val() : null;
+
+      if (oldPlayer && loadedGame.started) {
+        router.push(`/game/${payload.gameId}/player/${payload.slug}`);
+        return false;
+      } else if (loadedGame.started) {
+        return "Game has already started and no new players can join";
+      }
+
+      const newPlayerRef = push(gamePlayersRef);
+      const playerData = {
+        name: payload.nickname,
+        slug: payload.slug,
+        playerkey: newPlayerRef.key
+      };
+
+      await set(newPlayerRef, playerData);
+      context.commit("setPlayer", playerData);
       router.push(`/game/${payload.gameId}/player/${payload.slug}`);
-      return false;
-    } else if (loadedGame.started) {
-      return "Game has alredy started and no new players can join";
+    } catch (error) {
+      console.error("Failed to add player:", error);
+      throw error; // Or handle it as per your application's error handling policy
     }
-
-    const player = gamePlayers.push();
-    const playerkey = player.getKey();
-
-    const playerData = {
-      name: payload.nickname,
-      slug: payload.slug,
-      playerkey
-    };
-    await player.set(playerData);
-    context.commit("setPlayer", playerData);
-    router.push(`/game/${payload.gameId}/player/${payload.slug}`);
   },
 
   async loadPlayer(context, payload) {
-    const loadedGame = await database
-      .ref("/")
-      .orderByChild("gameId")
-      .equalTo(payload.game)
-      .once("child_added")
-      .then(snapshot => {
-        return snapshot.val();
-      });
+    //   const loadedGame = await database
+    //     .ref('/')
+    //     .orderByChild('gameId')
+    //     .equalTo(payload.game)
+    //     .once('child_added')
+    //     .then((snapshot) => {
+    //       return snapshot.val();
+    //     });
+    //   context.dispatch('loadGame', payload.game);
+    //   const target = await database
+    //     .ref(`/${loadedGame.gamekey}/players/`)
+    //     .orderByChild('slug')
+    //     .equalTo(payload.player)
+    //     .once('child_added')
+    //     .then((snapshot) => snapshot.val());
+    //   context.commit('setPlayer', target);
+    // },
+    const gameQuery = query(
+      ref(database, "/"),
+      orderByChild("gameId"),
+      equalTo(payload.game)
+    );
+
+    const gameSnapshot = await get(gameQuery);
+    let loadedGame;
+    gameSnapshot.forEach(child => {
+      loadedGame = child.val();
+      return true; // Stop iterating after the first match
+    });
+
+    if (!loadedGame) {
+      console.error("Game not found");
+      return;
+    }
+
     context.dispatch("loadGame", payload.game);
-    const target = await database
-      .ref(`/${loadedGame.gamekey}/players/`)
-      .orderByChild("slug")
-      .equalTo(payload.player)
-      .once("child_added")
-      .then(snapshot => snapshot.val());
+
+    const playerQuery = query(
+      ref(database, `/${loadedGame.gamekey}/players`),
+      orderByChild("slug"),
+      equalTo(payload.player)
+    );
+    const playerSnapshot = await get(playerQuery);
+    let target;
+    playerSnapshot.forEach(child => {
+      target = child.val();
+      return true; // Stop iterating after the first match
+    });
+
+    if (!target) {
+      console.error("Player not found");
+      return;
+    }
+
     context.commit("setPlayer", target);
   }
 };

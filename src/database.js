@@ -1,6 +1,8 @@
-import * as firebase from "firebase/app";
-import "firebase/database";
-const config = {
+import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
   apiKey: "AIzaSyDQKeqPh46LhFr2z-BAoxgj6xBEbsMeEqo",
   authDomain: "criminal-minds.firebaseapp.com",
   databaseURL: "https://criminal-minds.firebaseio.com",
@@ -9,6 +11,11 @@ const config = {
   messagingSenderId: "744849447046",
   appId: "1:744849447046:web:b7d547afee68c2c96ed907"
 };
-firebase.initializeApp(config);
 
-export default firebase.database();
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Get a reference to the database service
+const database = getDatabase(app);
+
+export default database;
