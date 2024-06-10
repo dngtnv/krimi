@@ -9,10 +9,7 @@
             <v-chip
               small
               color="blue lighten-4"
-              v-for="(mean, index) in [...game.means].slice(
-                player.index * 4,
-                player.index * 4 + 4
-              )"
+              v-for="(mean, index) in [...game.means].slice(player.index * 4, player.index * 4 + 4)"
               :key="index"
               >{{ mean }}</v-chip
             >
@@ -21,37 +18,24 @@
             <v-chip
               small
               color="red lighten-4"
-              v-for="(mean, index) in [...game.clues].slice(
-                player.index * 4,
-                player.index * 4 + 4
-              )"
+              v-for="(mean, index) in [...game.clues].slice(player.index * 4, player.index * 4 + 4)"
               :key="'clue' + index"
               >{{ mean }}</v-chip
             >
           </v-chip-group>
         </v-card-text>
         <v-card-actions>
-          <v-btn @click="sheet = !sheet" text>{{ t("Role") }}</v-btn>
-          <v-btn @click="passTurn" :disabled="disableActions" text>{{
-            t("Pass turn")
-          }}</v-btn>
-          <v-btn
-            @click="solve = !solve"
-            color="accent"
-            :disabled="disableActions"
-            text
-            >{{ t("Solve") }}</v-btn
-          >
+          <v-btn @click="sheet = !sheet" text>{{ t('Role') }}</v-btn>
+          <v-btn @click="passTurn" :disabled="disableActions" text>{{ t('Pass turn') }}</v-btn>
+          <v-btn @click="solve = !solve" color="accent" :disabled="disableActions" text>{{ t('Solve') }}</v-btn>
         </v-card-actions>
       </v-card>
     </v-col>
     <v-bottom-sheet inset v-model="sheet">
       <v-sheet class="text-center" height="600px">
         <v-container>
-          <v-btn class="mt-6" dark @click="sheet = !sheet">{{
-            t("close")
-          }}</v-btn>
-          <p class="headline mt-4">{{ t("You are") }} {{ playerRole }}</p>
+          <v-btn class="mt-6" dark @click="sheet = !sheet">{{ t('close') }}</v-btn>
+          <p class="headline mt-4">{{ t('You are') }} {{ playerRole }}</p>
           <murderer-choice
             @choice="this.sheet = false"
             v-if="player.index === game.murderer"
@@ -62,20 +46,14 @@
       </v-sheet>
     </v-bottom-sheet>
     <v-bottom-sheet inset v-model="solve">
-      <v-sheet
-        class="text-center"
-        height="500px"
-        style="height:500px; overflow-y:auto;"
-      >
+      <v-sheet class="text-center" height="500px" style="height:500px; overflow-y:auto;">
         <v-container>
-          <v-btn class="mt-6" dark @click="solve = !solve">{{
-            t("close")
-          }}</v-btn>
-          <p class="headline mt-4">{{ t("Solve the crime") }}</p>
+          <v-btn class="mt-6" dark @click="solve = !solve">{{ t('close') }}</v-btn>
+          <p class="headline mt-4">{{ t('Solve the crime') }}</p>
           <v-col cols="12">
             <v-card>
               <v-card-text>
-                {{ t("Who is the murderer?") }}
+                {{ t('Who is the murderer?') }}
                 <v-select
                   class="mt-2"
                   :items="players"
@@ -88,7 +66,7 @@
                 <v-row v-if="selectedPlayer">
                   <v-col cols="12" md="6">
                     <div class="text-left">
-                      {{ t("Select the means of murder:") }}
+                      {{ t('Select the means of murder:') }}
                       <v-chip-group column>
                         <v-chip
                           small
@@ -102,9 +80,7 @@
                           )"
                           :key="index"
                         >
-                          <v-icon class="mr-1" small v-if="guess.mean === mean"
-                            >mdi-check</v-icon
-                          >
+                          <v-icon class="mr-1" small v-if="guess.mean === mean">mdi-check</v-icon>
                           {{ mean }}
                         </v-chip>
                       </v-chip-group>
@@ -112,7 +88,7 @@
                   </v-col>
                   <v-col cols="12" md="6">
                     <div class="text-left">
-                      {{ t("Select the key evidence:") }}
+                      {{ t('Select the key evidence:') }}
                       <v-chip-group column>
                         <v-chip
                           small
@@ -126,9 +102,7 @@
                           )"
                           :key="index"
                         >
-                          <v-icon class="mr-1" small v-if="guess.key === clue"
-                            >mdi-check</v-icon
-                          >
+                          <v-icon class="mr-1" small v-if="guess.key === clue">mdi-check</v-icon>
                           {{ clue }}
                         </v-chip>
                       </v-chip-group>
@@ -136,7 +110,7 @@
                   </v-col>
                 </v-row>
                 <v-card-text>
-                  <v-btn @click="sendGuess">{{ t("Send guess") }}</v-btn>
+                  <v-btn @click="sendGuess">{{ t('Send guess') }}</v-btn>
                 </v-card-text>
               </v-card-text>
             </v-card>
@@ -148,7 +122,7 @@
 </template>
 
 <script>
-import MurdererChoice from "@/components/MurdererChoice";
+import MurdererChoice from '@/components/MurdererChoice';
 export default {
   components: { MurdererChoice },
   data: () => ({
@@ -157,34 +131,34 @@ export default {
     guess: {
       player: null,
       mean: null,
-      key: null
-    }
+      key: null,
+    },
   }),
   props: {
     game: {
       type: Object,
-      required: true
+      required: true,
     },
     player: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   locales: {
     vn: {
-      "the murderer": "o assassino",
-      "a detective": "um detetive",
-      "You are": "Você é",
-      close: "fechar",
-      Role: "Papel",
-      "Pass turn": "Passar",
-      Solve: "Solucionar",
-      "Solve the crime": "Solucione o crime",
-      "Who is the murderer?": "Quem é o assassino?",
-      "Select the means of murder:": "Selecione a causa de morte",
-      "Select the key evidence:": "Selecione a evidência principal",
-      "Send guess": "Mandar palpite"
-    }
+      'the murderer': 'kẻ sát nhân',
+      'a detective': 'thám tử',
+      'You are': 'Bạn là',
+      close: 'Đóng',
+      Role: 'Vai trò',
+      'Pass turn': 'Bỏ qua lượt',
+      Solve: 'Kết luận',
+      'Solve the crime': 'Kết luận vụ án',
+      'Who is the murderer?': 'Ai là kẻ sát nhân?',
+      'Select the means of murder:': 'Đâu là hung khí gây án:',
+      'Select the key evidence:': 'Chọn bằng chứng:',
+      'Send guess': 'Gửi kết luận',
+    },
   },
   computed: {
     disableActions() {
@@ -195,40 +169,36 @@ export default {
     },
     playerRole() {
       if (this.player.index === this.game.murderer) {
-        return this.t("the murderer");
+        return this.t('the murderer');
       } else {
-        return this.t("a detective");
+        return this.t('a detective');
       }
     },
     players() {
       return Object.keys(this.game.players)
-        .map(item => this.game.players[item])
-        .filter(
-          item =>
-            item.index !== this.game.detective &&
-            item.index !== this.player.index
-        );
+        .map((item) => this.game.players[item])
+        .filter((item) => item.index !== this.game.detective && item.index !== this.player.index);
     },
     selectedPlayer() {
-      return this.players.find(item => item.index === this.guess.player);
-    }
+      return this.players.find((item) => item.index === this.guess.player);
+    },
   },
   methods: {
     async passTurn() {
-      await this.$store.dispatch("passTurn", {
+      await this.$store.dispatch('passTurn', {
         game: this.game.gamekey,
-        player: this.player
+        player: this.player,
       });
     },
     async sendGuess() {
-      await this.$store.dispatch("makeGuess", {
+      await this.$store.dispatch('makeGuess', {
         game: this.game.gamekey,
         player: this.player,
-        guess: this.guess
+        guess: this.guess,
       });
       this.solve = false;
-    }
-  }
+    },
+  },
 };
 </script>
 

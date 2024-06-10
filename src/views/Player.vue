@@ -1,49 +1,33 @@
 <template>
   <v-container style="height:100%" v-if="player && game">
-    <v-row
-      v-if="!game.started"
-      style="height:100%"
-      align="center"
-      justify="center"
-      class="mt-10"
-    >
+    <v-row v-if="!game.started" style="height:100%" align="center" justify="center" class="mt-10">
       <v-col cols="12" lg="6">
         <div v-if="!game.started">
           <h2 class="display-2">{{ player.name }}</h2>
           <p class="subtitle-1 my-4">
-            {{ t("You are in room") }}
+            {{ t('You are in room') }}
             <code class="accent--text text-uppercase">{{ game.gameId }}</code
-            >. {{ t("Waiting for the game start.") }}
+            >. {{ t('Waiting for the game start.') }}
           </p>
-          <v-progress-linear
-            indeterminate
-            rounded
-            absolute
-            bottom
-            color="accent"
-          ></v-progress-linear>
+          <v-progress-linear indeterminate rounded absolute bottom color="accent"></v-progress-linear>
         </div>
       </v-col>
     </v-row>
-    <forensic-analysis
-      v-if="game.started && player.index === game.detective"
-      :game="game"
-      :player="player"
-    />
+    <forensic-analysis v-if="game.started && player.index === game.detective" :game="game" :player="player" />
     <detective v-else-if="game.started" :game="game" :player="player" />
   </v-container>
 </template>
 
 <script>
-import ForensicAnalysis from "@/components/ForensicAnalysis";
-import Detective from "@/components/Detective";
+import Detective from '@/components/Detective';
+import ForensicAnalysis from '@/components/ForensicAnalysis';
 export default {
-  name: "Player",
+  name: 'Player',
   locales: {
     vn: {
-      "You are in room": "Você está na sala",
-      "Waiting for the game start.": "Esperando o jogo começar."
-    }
+      'You are in room': 'Bạn đang ở phòng',
+      'Waiting for the game start.': 'Chờ game bắt đầu.',
+    },
   },
   components: { ForensicAnalysis, Detective },
   computed: {
@@ -52,25 +36,25 @@ export default {
     },
     player() {
       return this.$store.state.player;
-    }
+    },
   },
   methods: {},
   async mounted() {
-    await this.$store.dispatch("loadPlayer", {
+    await this.$store.dispatch('loadPlayer', {
       game: this.$route.params.id,
-      player: this.$route.params.slug
+      player: this.$route.params.slug,
     });
     this.$translate.setLang(this.game.lang);
   },
   watch: {
     async game(newValue, oldValue) {
       if (oldValue && !oldValue.started && newValue.started) {
-        await this.$store.dispatch("loadPlayer", {
+        await this.$store.dispatch('loadPlayer', {
           game: this.$route.params.id,
-          player: this.$route.params.slug
+          player: this.$route.params.slug,
         });
       }
-    }
-  }
+    },
+  },
 };
 </script>

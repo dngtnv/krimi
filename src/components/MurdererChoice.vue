@@ -3,7 +3,7 @@
     <v-col cols="12" md="6">
       <v-card height="100%">
         <v-card-text>
-          {{ t("Select your means of murder:") }}
+          {{ t('Select your means of murder:') }}
           <v-chip-group column>
             <v-chip
               small
@@ -12,15 +12,10 @@
               :class="{ 'v-chip--active': murdererChoice.mean === mean }"
               @click="murdererChoice.mean = mean"
               :disabled="!!game.murdererChoice"
-              v-for="(mean, index) in [...game.means].slice(
-                player.index * 4,
-                player.index * 4 + 4
-              )"
+              v-for="(mean, index) in [...game.means].slice(player.index * 4, player.index * 4 + 4)"
               :key="index"
             >
-              <v-icon class="mr-1" small v-if="murdererChoice.mean === mean"
-                >mdi-check</v-icon
-              >
+              <v-icon class="mr-1" small v-if="murdererChoice.mean === mean">mdi-check</v-icon>
               {{ mean }}
             </v-chip>
           </v-chip-group>
@@ -30,7 +25,7 @@
     <v-col cols="12" md="6">
       <v-card height="100%">
         <v-card-text>
-          {{ t("Select your key evidence:") }}
+          {{ t('Select your key evidence:') }}
           <v-chip-group column>
             <v-chip
               small
@@ -39,15 +34,10 @@
               @click="murdererChoice.key = clue"
               color="red lighten-4"
               :disabled="!!game.murdererChoice"
-              v-for="(clue, index) in [...game.clues].slice(
-                player.index * 4,
-                player.index * 4 + 4
-              )"
+              v-for="(clue, index) in [...game.clues].slice(player.index * 4, player.index * 4 + 4)"
               :key="index"
             >
-              <v-icon class="mr-1" small v-if="murdererChoice.key === clue"
-                >mdi-check</v-icon
-              >
+              <v-icon class="mr-1" small v-if="murdererChoice.key === clue">mdi-check</v-icon>
               {{ clue }}
             </v-chip>
           </v-chip-group>
@@ -55,11 +45,7 @@
       </v-card>
     </v-col>
     <v-col class="mt-2" cols="12" v-if="!game.murdererChoice">
-      <v-btn
-        @click="sendChoice"
-        :disabled="!murdererChoice.mean || !murdererChoice.key"
-        >{{ t("Send choice") }}</v-btn
-      >
+      <v-btn @click="sendChoice" :disabled="!murdererChoice.mean || !murdererChoice.key">{{ t('Send choice') }}</v-btn>
     </v-col>
   </v-row>
 </template>
@@ -69,41 +55,41 @@ export default {
   data: () => ({
     murdererChoice: {
       mean: null,
-      key: null
-    }
+      key: null,
+    },
   }),
   locales: {
     vn: {
-      "Select your means of murder:": "Selecione a causa da morte:",
-      "Select your key evidence:": "Selecione a evidência principal:",
-      "Send choice": "Enviar escolha"
-    }
+      'Select your means of murder:': 'Chọn hung khí gây án:',
+      'Select your key evidence:': 'Chọn bằng chứng quan trọng:',
+      'Send choice': 'Gửi',
+    },
   },
   props: {
     game: {
       type: Object,
-      required: true
+      required: true,
     },
     player: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     async sendChoice() {
-      await this.$store.dispatch("setMurdererChoice", {
+      await this.$store.dispatch('setMurdererChoice', {
         game: this.game.gamekey,
-        choice: this.murdererChoice
+        choice: this.murdererChoice,
       });
-      this.$emit("choice");
-    }
+      this.$emit('choice');
+    },
   },
   mounted() {
     if (this.game.murdererChoice) {
       this.murdererChoice.mean = this.game.murdererChoice.mean;
       this.murdererChoice.key = this.game.murdererChoice.key;
     }
-  }
+  },
 };
 </script>
 

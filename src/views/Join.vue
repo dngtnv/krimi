@@ -5,9 +5,9 @@
         {{ errorText }}
       </v-alert>
       <v-col class="mt-6" cols="12" md="6">
-        <h2 class="display-2">{{ t("Join game") }}</h2>
+        <h2 class="display-2">{{ t('Join game') }}</h2>
         <p class="subtitle-1 my-4">
-          {{ t("Enter a game code and a nickname to join a game:") }}
+          {{ t('Enter a game code and a nickname to join a game:') }}
         </p>
         <form @submit.prevent="joinGame">
           <v-row>
@@ -35,14 +35,9 @@
               <v-btn class="mr-4 mb-4 mb-lg-0" x-large to="/">
                 <v-icon class="accent--text">mdi-arrow-left</v-icon>
               </v-btn>
-              <v-btn
-                class="mb-4"
-                :disabled="disabled"
-                type="submit"
-                x-large
-                color="accent"
-                >{{ t("Enter game") }}</v-btn
-              >
+              <v-btn class="mb-4" :disabled="disabled" type="submit" x-large color="accent">{{
+                t('Enter game')
+              }}</v-btn>
             </v-col>
           </v-row>
         </form>
@@ -53,45 +48,44 @@
 
 <script>
 export default {
-  name: "Home",
+  name: 'Home',
   locales: {
     vn: {
-      "Enter a game code and a nickname to join a game:":
-        "Digite o código do jogo e um apelido para entrar:",
-      "Your nickname": "Seu apelido",
-      "Game code": "Código do jogo",
-      "Join game": "Entrar em um jogo",
-      "Enter game": "Entrar no jogo"
-    }
+      'Enter a game code and a nickname to join a game:': 'Nhập code và nickname để vào phòng:',
+      'Your nickname': 'Nickname của bạn',
+      'Game code': 'Code phòng',
+      'Join game': 'Tham gia phòng',
+      'Enter game': 'Enter room',
+    },
   },
   data: () => ({
-    nickname: "",
-    gameId: "",
+    nickname: '',
+    gameId: '',
     error: false,
     disabled: false,
-    errorText: null
+    errorText: null,
   }),
   methods: {
     async joinGame() {
       this.disabled = true;
       this.errorText = null;
       this.error = false;
-      const errorText = await this.$store.dispatch("addPlayer", {
+      const errorText = await this.$store.dispatch('addPlayer', {
         nickname: this.nickname,
-        slug: this.nickname.replace(/\s+/g, "-").toLowerCase(),
-        gameId: this.gameId.toLowerCase()
+        slug: this.nickname.replace(/\s+/g, '-').toLowerCase(),
+        gameId: this.gameId.toLowerCase(),
       });
       if (errorText) {
         this.error = true;
         this.errorText = errorText;
         this.disabled = false;
       }
-    }
+    },
   },
   mounted() {
     if (this.$route.query.room) {
       this.gameId = this.$route.query.room;
     }
-  }
+  },
 };
 </script>
